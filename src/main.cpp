@@ -1,6 +1,5 @@
 #include "sdl.hpp"
 #include <iostream>
-#include <vector>
 
 using namespace std;
 
@@ -39,14 +38,20 @@ public:
     };
 
     TYPE type;
+    bool active; // To check if the portal is created
 
-    Portal(int xpos, int ypos, TYPE portalType) {
+    Portal() : active(false) {}
+
+    void create(int xpos, int ypos, TYPE portalType) {
         x = xpos;
         y = ypos;
         type = portalType;
+        active = true;
     }
 
     void render() {
+        if (!active) return; // If the portal is inactive, don't render it
+
         Color portalColor;
         if (type == RED) {
             portalColor = COLOR_RED;
@@ -55,12 +60,16 @@ public:
         } else {
             portalColor = COLOR_GREEN;
         }
-        draw_circle(x, y, 50, portalColor); // Draw portal as a circle
+        draw_circle(x, y, 30, portalColor); // Draw portal as a circle
     }
 
     void position(int xpos, int ypos) {
         x = xpos;
         y = ypos;
+    }
+
+    void deactivate() {
+        active = false; // Deactivate the portal
     }
 };
 
@@ -71,8 +80,8 @@ int main() {
 
     Actor player(100, 100);
 
-    // Vector to store the portals
-    vector<Portal> portals;
+    // Create one portal for each color, initially inactive
+    Portal redPortal, greenPortal, bluePortal;
 
     // Main game loop
     while (running) {
@@ -88,13 +97,25 @@ int main() {
                 case SDL_KEYDOWN:
                     switch (event.key.keysym.sym) {
                         case SDLK_r:
-                            portals.push_back(Portal(player.x, player.y, Portal::RED));
+                            if (!redPortal.active) {
+                                redPortal.create(player.x, player.y, Portal::RED);
+                            } else {
+                                redPortal.position(player.x, player.y);
+                            }
                             break;
                         case SDLK_g:
-                            portals.push_back(Portal(player.x, player.y, Portal::GREEN));
+                            if (!greenPortal.active) {
+                                greenPortal.create(player.x, player.y, Portal::GREEN);
+                            } else {
+                                greenPortal.position(player.x, player.y);
+                            }
                             break;
                         case SDLK_b:
-                            portals.push_back(Portal(player.x, player.y, Portal::BLUE));
+                            if (!bluePortal.active) {
+                                bluePortal.create(player.x, player.y, Portal::BLUE);
+                            } else {
+                                bluePortal.position(player.x, player.y);
+                            }
                             break;
                         default:
                             break;
@@ -123,10 +144,10 @@ int main() {
         // Render the actor
         player.render();
 
-        // Render all portals
-        for (auto& portal : portals) {
-            portal.render();
-        }
+        // Render active portals
+        redPortal.render();
+        greenPortal.render();
+        bluePortal.render();
 
         // Present the rendered screen to the window
         present();
