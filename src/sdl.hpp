@@ -6,7 +6,6 @@
 #include <stdexcept>
 #include <iostream>
 #include <stdint.h>
-#include"color.h"
 
 //--------------------------GLOBAL VARIABLES-----------------------------------------
 
@@ -82,10 +81,7 @@ bool window_should_close() {
     return main_window_should_close;
 }
 
-// Begin drawing (optional setup, placeholder for future use)
-void start_drawing() {
-    // Placeholder to mimic Raylib's flow
-}
+
 
 // Set the background color
 void clear_screen(Color color) {
@@ -130,7 +126,7 @@ void draw_text(const char *text, int x, int y, Color color) {
 }
 
 // End drawing and present to the screen (with FPS delay)
-void stop_drawing() {
+void present() {
     SDL_RenderPresent(main_renderer);
 
     // Delay to maintain FPS
